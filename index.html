@@ -52,6 +52,8 @@
 </style>
 </head>
 <body>
+  <div class="row" id="login"></div>
+  
   <section id="arithmetic">
     <h2>Arithmetic</h2>
     <input type="number" id="num1" placeholder="Enter a number">
@@ -75,9 +77,43 @@
   <p id="cipher-result"></p>
 </section>
 
+
+<script src="configuration.js"></script>
 <script>
+  let hosts = configuration.hosts;
+  displayLogin();
+
+  function isPrimes(num) {
+    if (num <= 1) return false;
+    if (num <= 3) return true;
+
+    if (num % 2 === 0 || num % 3 === 0) return false;
+
+    for (let i = 5; i * i <= num; i += 6) {
+        if (num % i === 0 || num % (i + 2) === 0) return false;
+    }
+    return true;
+}
+
+
+  async function isPrime() {
+    const num = document.getElementById('prime-num').value;
+    const headers = {'Authorization': `Bearer ${configuration.token}`};
+    try {
+      const response = await fetch(`${hosts.primes_service}/primes/${num}`, { headers });
+      const result = await response.json();
+      // Assuming the JSON response has a boolean property 'isPrime' to indicate primality
+      document.getElementById('prime-result').innerText = result.isPrimes ? `${num} is a prime number.` : `${num} is not a prime number.`;
+    } catch (error) {
+      document.getElementById('prime-result').innerText = `Error checking prime status: ${error.message}`;
+    }
+  }
+/*
   function checkPrime() {
     const num = document.getElementById('prime-num').value;
+    const headers = {'Authorization': `Bearer ${configuration.token}`};
+    const response = await fetch(`${hosts.primes_service}/primes/${n}`, { headers});
+    const result = await response.json;
     let isPrime = num > 1;
     for (let i = 2; i < num; i++) {
       if (num % i === 0) {
@@ -87,7 +123,7 @@
     }
     document.getElementById('prime-result').innerText = isPrime ? `${num} is a prime number.` : `${num} is not a prime number.`;
   }
-
+*/
   function encodeCaesarCipher() {
     const text = document.getElementById('text-to-encode').value;
     const shift = 3; // Shift of 3 for Caesar Cipher
